@@ -1,28 +1,25 @@
 import { Request, Response, NextFunction } from 'express'
 
-import Movie from '../models/Movie'
-import MovieService from '../services/movie'
+import File from '../models/File'
+import FileService from '../services/file'
 import { BadRequestError } from '../helpers/apiError'
 
-// POST /movies
-export const createMovie = async (
+// POST /files
+export const createFile = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { name, publishedYear, genres, duration, characters } = req.body
+    const { description, author } = req.body
 
-    const movie = new Movie({
-      name,
-      publishedYear,
-      genres,
-      duration,
-      characters,
+    const file = new File({
+      description,
+      author,
     })
 
-    await MovieService.create(movie)
-    res.json(movie)
+    await FileService.create(file)
+    res.json(file)
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', error))
@@ -32,17 +29,17 @@ export const createMovie = async (
   }
 }
 
-// PUT /movies/:movieId
-export const updateMovie = async (
+// PUT /files/:fileId
+export const updateFile = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const update = req.body
-    const movieId = req.params.movieId
-    const updatedMovie = await MovieService.update(movieId, update)
-    res.json(updatedMovie)
+    const fileId = req.params.fileId
+    const updatedFile = await FileService.update(fileId, update)
+    res.json(updatedFile)
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', error))
@@ -53,13 +50,13 @@ export const updateMovie = async (
 }
 
 // DELETE /movies/:movieId
-export const deleteMovie = async (
+export const deleteFile = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await MovieService.deleteMovie(req.params.movieId)
+    await FileService.deleteFile(req.params.movieId)
     res.status(204).end()
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
@@ -77,7 +74,7 @@ export const findById = async (
   next: NextFunction
 ) => {
   try {
-    res.json(await MovieService.findById(req.params.movieId))
+    res.json(await FileService.findById(req.params.fileId))
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', error))
@@ -94,7 +91,7 @@ export const findAll = async (
   next: NextFunction
 ) => {
   try {
-    res.json(await MovieService.findAll())
+    res.json(await FileService.findAll())
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', error))
